@@ -6,7 +6,7 @@ public class State
 	static final int height = 6;
 	
 	static final long fullBoard = Long.parseLong("3FFFFFFFFFF", 16);
-
+	
 	public State(long white,long red, boolean whiteTurn) {
 		this.white = white;
 		this.red = red;
@@ -40,6 +40,17 @@ public class State
 			occupied = occupied >> width;
 		}
 		return -1;
+	}
+	
+	public void addMove(int dropedInColumn, boolean white)
+	{
+		int top = getTop(dropedInColumn-1);
+		//New top 
+		top += width;
+		if (white)
+			this.white += (1 << top);
+		else
+			this.red += (1 << top);
 	}
 	
 	public int TerminalState() {
@@ -103,17 +114,17 @@ public class State
 		return colorWin(white);
 	}
 	
-	ArrayList<Node> legalMoves() {
-		ArrayList<Node> l = new ArrayList<Node>();
+	ArrayList<State> legalMoves() {
+		ArrayList<State> l = new ArrayList<State>();
 		for (int i = 0; i < width; i++)
 		{
 			int top = getTop(i);
 			if (top != -1){
 				long insert = (1 << ((top*width)+i));
 				if (whiteTurn) 
-					l.add(new Node(white + insert,red,!whiteTurn));
+					l.add(new State(white + insert,red,!whiteTurn));
 				else 
-					l.add(new Node(white,red + insert,!whiteTurn));	
+					l.add(new State(white,red + insert,!whiteTurn));	
 			}
 		}
 		return l;
