@@ -1,13 +1,13 @@
 import java.util.*;
 
-public class Node
+public class State
 {
 	static final int width = 7;
 	static final int height = 6;
 	
 	static final long fullBoard = Long.parseLong("3FFFFFFFFFF", 16);
 
-	public Node(long white,long red, boolean whiteTurn) {
+	public State(long white,long red, boolean whiteTurn) {
 		this.white = white;
 		this.red = red;
 		this.whiteTurn = whiteTurn;
@@ -16,6 +16,7 @@ public class Node
 	boolean whiteTurn;
 	long white;
 	long red;
+	public int Score;
 	
 	long getOccupied() {
 		return white | red;
