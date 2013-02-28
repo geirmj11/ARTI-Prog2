@@ -5,7 +5,7 @@ public class Node
 	static final int width = 7;
 	static final int height = 6;
 	
-	static long fullBoard = Long.parseLong("3FFFFFFFFFF", 16);
+	static final long fullBoard = Long.parseLong("3FFFFFFFFFF", 16);
 
 	public Node(long white,long red, boolean whiteTurn) {
 		this.white = white;
@@ -110,9 +110,9 @@ public class Node
 			if (top != -1){
 				long insert = (1 << ((top*width)+i));
 				if (whiteTurn) 
-					l.add(new Node(white + insert,red,whiteTurn!);
+					l.add(new Node(white + insert,red,!whiteTurn));
 				else 
-					l.add(new Node(white,red + insert,whiteTurn!);	
+					l.add(new Node(white,red + insert,!whiteTurn));	
 			}
 		}
 		return l;
