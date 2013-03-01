@@ -75,17 +75,16 @@ public class State
 		//           001
 		// color & ((color >> 7) & ~7) & ((color >> 15) & ~3) & ((color >> 24) & ~3)
 		long tColor = color;
-		long mask = 127;
 		for (int i = 0; i < 3; i++){
 			//Diagonal left
-			if (((tColor & (tColor >> 8) & (tColor >> 16)  & (tColor >> 24)) & 7) > 0)
+			if (((tColor & (tColor >> 8) & (tColor >> 16)  & (tColor >> 24)) & 15) > 0)
 				return true;
 			//System.out.println(tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18));
 			//Diagonal right
-			if (((tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18)) & 112) > 0)
+			if (((tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18)) & 120) > 0)
 				return true;
 			//Column 
-			if (((tColor & (tColor >> 7) & (tColor >> 14) & (tColor >> 21)) & mask) > 0)
+			if (((tColor & (tColor >> 7) & (tColor >> 14) & (tColor >> 21)) & 127) > 0)
 				return true;
 				
 			tColor = tColor >> width;
