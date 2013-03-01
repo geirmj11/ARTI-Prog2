@@ -113,7 +113,7 @@ public class State
 	}
 	
 	///
-	/// Red has the first 4 bits of the integer and white next 4.
+	/// White has the most significant four bits and red has the least significant four bits.
 	///
 	ArrayList<Integer> getCombos()
 	{
@@ -134,28 +134,62 @@ public class State
 		//		
 		//	tColor = tColor >> width;
 		//}
-		
+
 		long r = red;
 		long w = white;
 		for (int i = 0; i < height; i++){
-			if (((white & 0xF) | (red & 0xF)) > 0 && (white & 0xF) == 0 || (red & 0xF) == 0)
-				combos.add((int)(((white & 0xF) << 4)  | (red & 0xF)));
-				
-			if (((white & 0x1E) | (red & 0x1E)) > 0 && (white & 0x1E) == 0 || (red & 0x1E) == 0)
-				combos.add((int)(((white & 0x1E) << 3) | ((red & 0x1E) >> 1)));
-				
-			if (((white & 0x3C) | (red & 0x3C)) > 0 && (white & 0x3C) == 0 || (red & 0x3C) == 0)
-				combos.add((int)(((white & 0x3C) << 2) |  ((red & 0x3C) >> 2)));
-				
-			if (((white & 0x3C) | (red & 0x3C)) > 0 && (white & 0x3C) == 0 || (red & 0x3C) == 0)
-				combos.add((int)(((white & 0x78) << 1) | ((red & 0x78) >> 3)));
-				
-			red = red >> width;
-			white = white >> width;
+			if (((w & 0xF) | (r & 0xF)) > 0 && (w & 0xF) == 0 || (r & 0xF) == 0)
+				combos.add((int)(((w & 0xF) << 4)  | (r & 0xF)));
+
+			if (((w & 0x1E) | (r & 0x1E)) > 0 && (w & 0x1E) == 0 || (r & 0x1E) == 0)
+				combos.add((int)(((w & 0x1E) << 3) | ((r & 0x1E) >> 1)));
+
+			if (((w & 0x3C) | (r & 0x3C)) > 0 && (w & 0x3C) == 0 || (r & 0x3C) == 0)
+				combos.add((int)(((w & 0x3C) << 2) |  ((r & 0x3C) >> 2)));
+
+			if (((w & 0x3C) | (r & 0x3C)) > 0 && (w & 0x3C) == 0 || (r & 0x3C) == 0)
+				combos.add((int)(((w & 0x78) << 1) | ((r & 0x78) >> 3)));
+
+			r = r >> width;
+			w = w >> width;
+		}
+		r = red;
+		w = white;
+		long line = 0;
+		for(int i = 0; i< 3;i++){           
+            for(int k = 0; k<4;k++){        //this is for left leaning sets of four
+                line = (r & 1) + ((r >> 7) & 2) + ((r >> 14) & 4) + ((r >> 21) & 8);
+                line += ((w & 1) + ((w >> 7) & 2) + ((r >> 14) & 4) + ((r >> 21) & 8))<<4;              
+                r = r >> 1;
+                w = w >> 1;
+                if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
+            }
+            r = r >> 3;
+            w = w >> 3;               
+		}
+		r = red;
+		w = white;
+		for(int i = 0; i< 3;i++){           
+            for(int k = 0; k<4;k++){        //this is for right leaning sets of four
+                line = (r & 8) + ((r >> 7) & 4) + ((r >> 14) & 2) + ((r >> 21) & 1);
+                line += (  (w & 8) + ((w >> 7) & 4) + ((r >> 14) & 2) + ((r >> 21) & 1))<<4;
+                r = r >> 1;
+                w = w >> 1;
+                if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
+            }
+		}
+		r = red;
+		w = white;
+		for(int i = 0; i< 21;i++) {
+            line = (r & 1) + ((r >> 6) & 2) + ((r >> 12) & 4) + ((r >> 18) & 8);
+            line += (w & 1) + ((w >> 6) & 2) + ((w >> 12) & 4) + ((w >> 18) & 8);
+            r = r >> 1;
+            w = w >> 1;
+            if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
 		}
 		return combos;
 	}
-	
+
 	ArrayList<State> legalMoves() {
 		ArrayList<State> l = new ArrayList<State>();
 		for (int i = 0; i < width; i++)
