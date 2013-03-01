@@ -160,6 +160,8 @@ public class State
                 w = w >> 1;
                 if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
             }
+            r = r >> 3;
+            w = w >> 3; 
 		}
 		
 		//Finally we check the columns on the board for sets of four.
