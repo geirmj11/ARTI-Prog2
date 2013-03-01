@@ -12,23 +12,20 @@ public class AgentBauer implements Agent
 	private int playClock;
 	private boolean myTurn;
 	private State currentState; 
-	private boolean outOfTime;
 
 	/*
 		init(String role, int playClock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playClock is the number of seconds after which nextAction must return.
 	*/
     public void init(String role, int playClock) {
-		outOfTime = false;
 		System.out.println("Start init");
 		this.role = role;
 		this.playClock = playClock;
 		System.out.println("Play clock" + playClock);
+		
 		myTurn = !role.equals("WHITE");
 		currentState = new State(0,0,myTurn);
+		
 		System.out.println("Done init");
-		//if(!role.equals("WHITE") myRole = 1;
-		//else myRole = 2;
-		// TODO: add your own initialization code here
     }
 
     public int heuristic(State state){
@@ -70,16 +67,11 @@ public class AgentBauer implements Agent
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
  
     public String nextAction(int lastDrop) { 
-		// TODO: 1. update your internal world model according to the action that was just executed
 		turnStarted = System.nanoTime();
-		// halda utanum stateið sem er í gangi akkurat núna, updatea internal stateið á einhvern hátt...
         System.out.println("Was dropped at " +lastDrop);
 
 		if(lastDrop != 0)
             currentState.addMove(lastDrop,myTurn);
-
-		if (currentState.terminalState() != 0)
-		    return "NOOP";
 
 		switch (currentState.terminalState()){
 			case 3: // Full Board
@@ -107,18 +99,17 @@ public class AgentBauer implements Agent
 		}
 		else
 		    return "NOOP";
-		// TODO: 2. run alpha-beta search to determine the best move
-
 	}
 	
 	/// Returns the column which is best to drop inn.
 	int whereToDrop(){
 		int index = 0;
-		int deep = 1;
-		for (; hasTime(); deep++){
+		//System.out.println("hasTime: " + hasTime());
+		for (int deep = 1; hasTime(); deep++){
 			index = indexOfBest(deep,currentState);
+			//System.out.println("hasTime: " + hasTime());
+			System.out.println("depth: " + deep);
 		}
-		System.out.println("depth: " + deep);
 		return index + 1;
 	}
 	
@@ -135,6 +126,8 @@ public class AgentBauer implements Agent
 			if (s == null)
 				continue;
 			int value = -alphaBeta( depth, s, -beta, -alpha );
+			
+			System.out.println("Value "+value+" index "+i);
 			bestValue = Math.max(value, bestValue);
 			if ( bestValue > alpha ) {
 				alpha = bestValue;
@@ -167,10 +160,7 @@ public class AgentBauer implements Agent
 	//return example 5 sec is 500.
 	boolean hasTime()
 	{
-		if (outOfTime)
-			return false;
-		outOfTime = (System.nanoTime() - turnStarted) / 10000000 > playClock * 100  - 50;
-		return outOfTime;
+		return (System.nanoTime() - turnStarted) / 10000000 <= playClock * 100  - 50;
 	}
 		
 }
