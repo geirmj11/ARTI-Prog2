@@ -11,8 +11,8 @@ public class AgentBauer implements Agent
 	private long turnStarted;
 	private int playclock;
 	private boolean myTurn;
-	private State currentState;
-	
+	private State currentState; 
+
 	/*
 		init(String role, int playclock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playclock is the number of seconds after which nextAction must return.
 	*/
@@ -71,16 +71,36 @@ public class AgentBauer implements Agent
 		// TODO: 1. update your internal world model according to the action that was just executed
 		turnStarted = System.nanoTime();
 		// halda utanum stateið sem er í gangi akkurat núna, updatea internal stateið á einhvern hátt...
-        if(lastDrop != 0)
+        System.out.println("Was dropped at " +lastDrop);
+
+		if(lastDrop != 0)
             currentState.addMove(lastDrop,myTurn);
-		
+
 		if (currentState.terminalState() != 0)
 		    return "NOOP";
-		
+
+		switch (currentState.terminalState()){
+			case 3: // Full Board
+				System.out.print("Full Board");
+			break;
+
+			case 2: // red
+				System.out.println("Red Won!");
+			break;
+
+			case 1: // white
+				System.out.println("White Won!");
+			break;
+
+			case 0: // None
+				System.out.println("Not a terminal state.");
+			break;
+		}
+
 		myTurn = !myTurn;  
         if(!myTurn) {
 			int drop = alphaBeta();
-			System.out.println("Droping to " + drop);			
+			System.out.println("Droping to " + drop);
 			return "(DROP " + drop + ")";
 		}
 		else
@@ -88,33 +108,37 @@ public class AgentBauer implements Agent
 		// TODO: 2. run alpha-beta search to determine the best move
 
 	}
-	
+
 	/// Returns the column which is best to drop inn.
 	int alphaBeta(){
-		int[] move = new int[7]; // 7 posible moves. 
+		int[] moveVal = new int[7]; // 7 posible moves.
+		State[] moves = new State[7];
+
 		int index = 0;
-		for (int deep = 1; (System.nanoTime() - turnStarted) / 100000000 < playclock * 10  - 5; deep++){
+		int deep = 1;
+		for (; (System.nanoTime() - turnStarted) / 100000000 < playclock * 10  - 5; deep++){
 			index = 0;
-			//System.out.println("time " + (System.nanoTime() - turnStarted) / 100000000);
-			//System.out.println("left " + playclock * 10);
 			for (State s : currentState.legalMoves()){
+				moves[index] = s;
 				if (s != null)
-					move[index++] = alphaBeta(deep,s,Integer.MIN_VALUE,Integer.MAX_VALUE);
+					moveVal[index++] = alphaBeta(deep,s,Integer.MIN_VALUE,Integer.MAX_VALUE);
 				else
-					move[index++] = Integer.MAX_VALUE;
+					moveVal[index++] = Integer.MIN_VALUE;
 			}
 		}
+		System.out.println(deep);
 		int maxValue = Integer.MIN_VALUE;
 		index = 0;
 		for (int i = 0; i < 7; i++){
-			if (move[i] > maxValue){
+			if (moveVal[i] > maxValue){
 				index = i;
-				maxValue = move[i];
+				maxValue = moveVal[i];
 			}
 		}
+		currentState = moves[index];
 		return index + 1;
 	}
-	
+
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
 	int alphaBeta(int depth, State state, int alpha, int beta) {
 		if (depth > 0 || state.terminalState() != 0)
@@ -123,7 +147,7 @@ public class AgentBauer implements Agent
 		for ( State s : state.legalMoves()) {
 			if (s == null)
 				continue;
-			int value = 1- alphaBeta( depth - 1, s, -beta, -alpha );
+			int value = - alphaBeta( depth - 1, s, -beta, -alpha );
 			//(Note: switch and negate bounds)
 			bestValue = Math.max(value, bestValue);
 			if ( bestValue > alpha ) {
