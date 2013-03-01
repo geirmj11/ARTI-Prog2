@@ -32,6 +32,7 @@ public class AgentBauer implements Agent
         int Value = 0;
         boolean isWhite;
         for(int i : state.getCombos()) {
+            //System.out.println("combos: " + i );
             if(i > 0xF){          //white
                 i = i >> 4;   
                 isWhite = true;
@@ -41,7 +42,7 @@ public class AgentBauer implements Agent
             }
             
             if(i == 0xF){
-                if(this.role == "WHITE" && isWhite == true)
+                if(role == "WHITE" && isWhite == true)
                     return Integer.MAX_VALUE;
                 else
                     return Integer.MIN_VALUE;
