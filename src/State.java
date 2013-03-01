@@ -13,10 +13,9 @@ public class State
 		this.whiteTurn = whiteTurn;
 	}
 	
-	boolean whiteTurn;
+	public boolean whiteTurn;
 	long white;
 	long red;
-	public int Score;
 	
 	long getOccupied() {
 		return white | red;
@@ -126,7 +125,7 @@ public class State
 					l.add(new State(white,red + insert,!whiteTurn));	
 			}
 			else{
-				l.add(null);// just to add up to 7 column.
+				l.add(null);// just so there are 7 columns.
 			}
 		}
 		return l;
@@ -136,5 +135,5 @@ public class State
     public int hashCode(){
 		Long ret = (long)19 * white + (long)31 * red;
         return ret.intValue();
-    }
+    }	
 }
