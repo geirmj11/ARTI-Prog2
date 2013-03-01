@@ -12,6 +12,7 @@ public class AgentBauer implements Agent
 	private int playClock;
 	private boolean myTurn;
 	private State currentState; 
+	private int[] curDepthLevel;
 
 	/*
 		init(String role, int playClock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playClock is the number of seconds after which nextAction must return.
@@ -20,10 +21,15 @@ public class AgentBauer implements Agent
 		System.out.println("Start init");
 		this.role = role;
 		this.playClock = playClock;
+		this.curDepthLevel = new int[7];
 		System.out.println("Play clock" + playClock);
 		
 		myTurn = !role.equals("WHITE");
 		currentState = new State(0,0,myTurn);
+		
+        for(State i : currentState.legalMoves()) {
+			System.out.println(heuristic(i));
+		}
 		
 		System.out.println("Done init");
     }
@@ -104,41 +110,56 @@ public class AgentBauer implements Agent
 	
 	/// Returns the column which is best to drop inn.
 	int whereToDrop(){
-		int index = 0;
 		//System.out.println("hasTime: " + hasTime());
 		for (int deep = 1; hasTime(); deep++){
-			index = indexOfBest(deep,currentState);
+			calculate(deep,currentState);
 			//System.out.println("hasTime: " + hasTime());
-			System.out.println("depth: " + deep);
+			//System.out.println("depth: " + deep);
+			//if (deep == 3 )
+			//	break;
 		}
-		return index + 1;
+		int best = 0;
+		for (int i = 0; i < 7; i++ ) {
+			//System.out.println( i +" " + curDepthLevel[i]);
+			if (curDepthLevel[i] > curDepthLevel[best]) 
+				best = i;
+		
+		}
+		return best + 1;
 	}
 	
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
-	int indexOfBest(int depth, State state) {
+	void calculate(int depth, State state) {
 		int bestValue = Integer.MIN_VALUE;	
 		int bestIndex = 0;
 		int i = 0;
 		
+		int[] bestValues = new int[7];
 		Integer beta = Integer.MIN_VALUE; //Call by referance :)
 		Integer alpha = Integer.MAX_VALUE;
 		for ( State s : state.legalMoves()) {
 			i++;
 			if (s == null)
 				continue;
-			int value = -alphaBeta( depth, s, -beta, -alpha );
+			int value = -alphaBeta( depth-1, s, -beta, -alpha );
 			
-			System.out.println("Value " + value + " index " + i);
+			//System.out.println("Value " + value + " index " + i);
+			
 			bestValue = Math.max(value, bestValue);
-			
+			bestValues[i-1] = bestValue;
 			if ( bestValue > alpha ) {
 				alpha = bestValue;
-				bestIndex = i;
-				System.out.println("Best index changed: " + i);
 				if ( alpha >= beta ) break;
 			}
 		}
-		return bestIndex;
+		if (hasTime())
+		{
+			//We did not run out of time :)
+			for (int k = 0; k < 7; k++ ) // and can safely use these values.
+				curDepthLevel[k] = bestValues[k];
+		}
+		//else
+		//	System.out.println( "Did not have time !");
 	}
 	
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )

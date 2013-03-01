@@ -7,10 +7,20 @@ public class Main {
 	 * Command line options: [port]
 	 */
 	public static void main(String[] args){
-		//Node n = new Node(0x78000,0);
+		//State n = new State(Long.parseLong("3FFFFFFFFFD",16),0,true);
+		////n.addMove(64,false);
+		//for (int i = 0; i < 7; i++)
+		//System.out.println(i+1 + " "+ n.getTop(i));
+		
+		
+		//n = new State(1,2,true);
+		//for (State s : n.legalMoves())
+		//	System.out.println(s.getOccupied());
+		
 		//System.out.print("Terminal state: " );
 		//switch (n.TerminalState()){
 		//	case 3: // Full Board
+		//		System.out.print("Full Board");
 		//		System.out.print("Full Board");
 		//	break;
 		//	

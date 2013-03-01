@@ -31,7 +31,7 @@ public class State
 	}
 	int getTop(int i) {
 		long occupied = getOccupied();
-		
+
 		for (int x = 0; x < height; x++) {
 			if (((occupied >> i) & 1)  == 0)
 				return x;
@@ -178,11 +178,11 @@ public class State
 
 	ArrayList<State> legalMoves() {
 		ArrayList<State> l = new ArrayList<State>();
-		for (int i = 0; i < width; i++)
+		for (int i = 1; i <= width; i++)
 		{
 			int top = getTop(i);
 			if (top != -1){
-				long insert = (1 << ((top*width)+i));
+				long insert = (1 << ((top*width)+(i-1)));
 				if (whiteTurn) 
 					l.add(new State(white + insert,red,!whiteTurn));
 				else 
