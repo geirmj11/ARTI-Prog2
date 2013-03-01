@@ -4,7 +4,6 @@ public class State
 {
 	static final int width = 7;
 	static final int height = 6;
-	
 	static final long fullBoard = Long.parseLong("3FFFFFFFFFF", 16);
 	
 	public State(long white,long red, boolean whiteTurn) {
@@ -43,12 +42,13 @@ public class State
 	
 	public void addMove(int dropedInColumn, boolean white) {
 		int top = getTop(dropedInColumn-1);
-		//New top 
-		top += width;
+		if (top == -1)
+			return;
+		int insert = 1 << ((dropedInColumn - 1) + top * width);
 		if (white)
-			this.white += (1 << top);
+			this.white += insert;
 		else
-			this.red += (1 << top);
+			this.red += insert;
 	}
 	
 	public int terminalState() {
