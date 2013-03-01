@@ -92,7 +92,7 @@ public class State
 		
 		tColor = color;
 		for (int i = 0; i < width; i++){
-			//Row
+			//Row 
 			if ((tColor & 0xF) == 0xF || 
 			    (tColor & 0x1E) == 0x1E || 
 			    (tColor & 0x3C) == 0x3C ||

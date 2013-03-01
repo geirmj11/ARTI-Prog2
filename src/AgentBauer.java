@@ -25,7 +25,7 @@ public class AgentBauer implements Agent
 		System.out.println("Play clock" + playClock);
 		
 		myTurn = !role.equals("WHITE");
-		currentState = new State(0,0,myTurn);
+		currentState = new State(0,7,myTurn);
 		
         for(State i : currentState.legalMoves()) {
 			System.out.println(heuristic(i));
@@ -49,9 +49,9 @@ public class AgentBauer implements Agent
             
             if(i == 0xF){
                 if(role == "WHITE" && isWhite == true)
-                    return Integer.MAX_VALUE;
-                else
                     return Integer.MIN_VALUE;
+                else
+                    return Integer.MAX_VALUE;
             }
             if(i == 1 || i == 2 || i == 4 || i == 8){
                 if(isWhite == true) Value++;
@@ -65,9 +65,8 @@ public class AgentBauer implements Agent
                 if(isWhite == true) Value += 10;
                 else Value -= 10;
             }
-                           
         }
-        if (this.role == "WHITE") return -Value;
+        if (this.role == "WHITE") return Value;
         else return Value;
     }
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
