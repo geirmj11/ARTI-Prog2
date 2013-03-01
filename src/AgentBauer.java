@@ -30,19 +30,39 @@ public class AgentBauer implements Agent
     }
 
     public int heuristic(State state){
-        //þarf að skoða stateið og gefa því einkun, meta einkunina út frá 
-		/*        Extend 3-out-of-4 heuristic to n-out-of-4 for n ≤ 3
-		Award weighted points based on the value of n
-		Score(p,G) = 100(n3) + 10(n2) + 1(n1)
-		ni is the number of i-out-of-4 winning lines for player p on game board G
-		  Five 1-out-of-4 winning lines (n1 = 5)
-		Five 2-out-of-4 winning lines (n2 = 5)
-		Score = 100(0) + 10(5) + 1(5) = 55
-		Compare players’ scores
-		Utility(p,G)
-				  = Score(p,G) – Score(opponent(p),G)
-		  */  
-        return 0;
+        int Value = 0;
+        boolean isWhite;
+        for(int i : state.getCombos()) {
+            if(i > 0xF){          //white
+                i = i >> 4;   
+                isWhite = true;
+            }
+            else {                //red
+                isWhite = false;
+            }
+            
+            if(i == 0xF){
+                if(this.role == "WHITE" && isWhite == true)
+                    return Integer.MAX_VALUE;
+                else
+                    return Integer.MIN_VALUE;
+            }
+            if(i == 1 || i == 2 || i == 4 || i == 8){
+                if(isWhite == true) Value++;
+                else Value--;
+            }
+            else if(i == 7 || i == 11 || i == 13 || i == 14){
+                if(isWhite == true) Value += 100;
+                else Value -= 100;
+            }
+            else {
+                if(isWhite == true) Value += 10;
+                else Value -= 10;
+            }
+                           
+        }
+        if (this.role == "WHITE") return Value;
+        else return -Value;
     }
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
