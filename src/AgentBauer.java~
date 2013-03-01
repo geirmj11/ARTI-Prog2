@@ -116,8 +116,8 @@ public class AgentBauer implements Agent
 			calculate(deep,currentState);
 			//System.out.println("hasTime: " + hasTime());
 			//System.out.println("depth: " + deep);
-			if (deep == 10 )
-				break;
+			//if (deep == 3 )
+			//	break;
 		}
 		int best = 0;
 		for (int i = 0; i < 7; i++ ) {
