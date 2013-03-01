@@ -61,41 +61,41 @@ public class AgentBauer implements Agent
             }
                            
         }
-        if (role == "WHITE") return Value;
-        else return -Value;
+        if (this.role == "WHITE") return -Value;
+        else return Value;
     }
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
  
     public String nextAction(int lastDrop) { 
 		turnStarted = System.nanoTime();
-        System.out.println("Was dropped at " +lastDrop);
+        System.out.println("-------------------->  Enemy dropped at " +lastDrop);
 
 		if(lastDrop != 0)
             currentState.addMove(lastDrop,myTurn);
 
-		switch (currentState.terminalState()){
-			case 3: // Full Board
-				System.out.print("Full Board");
-			break;
-
-			case 2: // red
-				System.out.println("Red Won!");
-			break;
-
-			case 1: // white
-				System.out.println("White Won!");
-			break;
-
-			case 0: // None
-				System.out.println("Not a terminal state.");
-			break;
-		}
+		//switch (currentState.terminalState()){
+		//	case 3: // Full Board
+		//		System.out.print("Full Board");
+		//	break;
+        //
+		//	case 2: // red
+		//		System.out.println("Red Won!");
+		//	break;
+        //
+		//	case 1: // white
+		//		System.out.println("White Won!");
+		//	break;
+        //
+		//	case 0: // None
+		//		System.out.println("Not a terminal state.");
+		//	break;
+		//}
 
 		myTurn = !myTurn;  
         if(!myTurn) {
 			int drop = whereToDrop();
-			System.out.println("Droping to " + drop);
+			System.out.println("------------------------->   Droping to " + drop);
 			return "(DROP " + drop + ")";
 		}
 		else
@@ -128,12 +128,14 @@ public class AgentBauer implements Agent
 				continue;
 			int value = -alphaBeta( depth, s, -beta, -alpha );
 			
-			System.out.println("Value "+value+" index "+i);
+			System.out.println("Value " + value + " index " + i);
 			bestValue = Math.max(value, bestValue);
+			
 			if ( bestValue > alpha ) {
 				alpha = bestValue;
-				if ( alpha >= beta ) break;
 				bestIndex = i;
+				System.out.println("Best index changed: " + i);
+				if ( alpha >= beta ) break;
 			}
 		}
 		return bestIndex;
