@@ -7,10 +7,10 @@ public class Main {
 	 * Command line options: [port]
 	 */
 	public static void main(String[] args){
-		//State n = new State(Long.parseLong("3FFFFFFFFFD",16),0,true);
-		////n.addMove(64,false);
+		State n = new State(0,1,true);
+		//n.addMove(64,false);
 		//for (int i = 0; i < 7; i++)
-		//System.out.println(i+1 + " "+ n.getTop(i));
+		//	System.out.println(i+1 + " "+ n.getTop(i));
 		
 		
 		//n = new State(1,2,true);
