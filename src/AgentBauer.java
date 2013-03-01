@@ -8,6 +8,7 @@ public class AgentBauer implements Agent
 	private Random random = new Random();
 	private String role;
 	//private int myRole;
+	private long turnStarted;
 	private int playclock;
 	private boolean myTurn;
 	private State currentState;
@@ -16,28 +17,31 @@ public class AgentBauer implements Agent
 		init(String role, int playclock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playclock is the number of seconds after which nextAction must return.
 	*/
     public void init(String role, int playclock) {
+		System.out.println("Start init");
 		this.role = role;
 		this.playclock = playclock;
-		currentState = new State(0,0);
+		System.out.println("Play clock" + playclock);
 		myTurn = !role.equals("WHITE");
+		currentState = new State(0,0,myTurn);
+		System.out.println("Done init");
 		//if(!role.equals("WHITE") myRole = 1;
 		//else myRole = 2;
 		// TODO: add your own initialization code here
     }
 
-    public int heuristic(){
+    public int heuristic(State state){
         //þarf að skoða stateið og gefa því einkun, meta einkunina út frá 
-/*        Extend 3-out-of-4 heuristic to n-out-of-4 for n ≤ 3
-Award weighted points based on the value of n
-Score(p,G) = 100(n3) + 10(n2) + 1(n1)
-ni is the number of i-out-of-4 winning lines for player p on game board G
-  Five 1-out-of-4 winning lines (n1 = 5)
-Five 2-out-of-4 winning lines (n2 = 5)
-Score = 100(0) + 10(5) + 1(5) = 55
-Compare players’ scores
-Utility(p,G)
-          = Score(p,G) – Score(opponent(p),G)
-  */  
+		/*        Extend 3-out-of-4 heuristic to n-out-of-4 for n ≤ 3
+		Award weighted points based on the value of n
+		Score(p,G) = 100(n3) + 10(n2) + 1(n1)
+		ni is the number of i-out-of-4 winning lines for player p on game board G
+		  Five 1-out-of-4 winning lines (n1 = 5)
+		Five 2-out-of-4 winning lines (n2 = 5)
+		Score = 100(0) + 10(5) + 1(5) = 55
+		Compare players’ scores
+		Utility(p,G)
+				  = Score(p,G) – Score(opponent(p),G)
+		  */  
         return 0;
     }
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
@@ -45,30 +49,68 @@ Utility(p,G)
  
     public String nextAction(int lastDrop) { 
 		// TODO: 1. update your internal world model according to the action that was just executed
-
+		turnStarted = System.nanoTime();
 		// halda utanum stateið sem er í gangi akkurat núna, updatea internal stateið á einhvern hátt...
         if(lastDrop != 0)
             currentState.addMove(lastDrop,myTurn);
-    
-        int drop = alphaBeta();
-        myTurn = !myTurn;        
-        if(!myTurn) 
-            return "(DROP " + drop + ")";
+		
+		if (currentState.terminalState() != 0)
+		    return "NOOP";
+		
+		myTurn = !myTurn;  
+        if(!myTurn) {
+			int drop = alphaBeta();
+			System.out.println("Droping to " + drop);			
+			return "(DROP " + drop + ")";
+		}
 		else
 		    return "NOOP";
 		// TODO: 2. run alpha-beta search to determine the best move
 
 	}
-	private int alphaBeta(node, depth, alpha, beta, player){
-        if(depth == 0 || node.TerminalState());
-            //return the heuristic value of the node
-        
-        bestValue = -INF;
-        for (for all successors s’ of s) {
-            value = -AlphaBeta(depth–1,s’,- beta,-alpha);  
-            // Alpha - A lower­bound on best that a player to move can achieve
-            // Beta - An upper­bound on the best that a player can achieve – (without opponent playing a different line up the tree)
-        
+	
+	/// Returns the column which is best to drop inn.
+	int alphaBeta(){
+		int[] move = new int[7]; // 7 posible moves. 
+		int index = 0;
+		for (int deep = 1; (System.nanoTime() - turnStarted) / 100000000 < playclock * 10  - 5; deep++){
+			index = 0;
+			//System.out.println("time " + (System.nanoTime() - turnStarted) / 100000000);
+			//System.out.println("left " + playclock * 10);
+			for (State s : currentState.legalMoves()){
+				if (s != null)
+					move[index++] = alphaBeta(deep,s,Integer.MIN_VALUE,Integer.MAX_VALUE);
+				else
+					move[index++] = Integer.MAX_VALUE;
+			}
+		}
+		int maxValue = Integer.MIN_VALUE;
+		index = 0;
+		for (int i = 0; i < 7; i++){
+			if (move[i] > maxValue){
+				index = i;
+				maxValue = move[i];
+			}
+		}
+		return index + 1;
 	}
-
+	
+	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
+	int alphaBeta(int depth, State state, int alpha, int beta) {
+		if (depth > 0 || state.terminalState() != 0)
+			return heuristic(state);
+		int bestValue = Integer.MIN_VALUE;	
+		for ( State s : state.legalMoves()) {
+			if (s == null)
+				continue;
+			int value = 1- alphaBeta( depth - 1, s, -beta, -alpha );
+			//(Note: switch and negate bounds)
+			bestValue = Math.max(value, bestValue);
+			if ( bestValue > alpha ) {
+				alpha = bestValue; //(adjust the lower bound)
+				if ( alpha >= beta ) break; //(beta cutoff)
+			}
+		}
+		return bestValue;
+	}
 }

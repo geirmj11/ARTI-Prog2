@@ -10,13 +10,14 @@ public class RandomAgent implements Agent
 	private String role;
 	private int playclock;
 	private boolean myTurn;
-	
+	private int drop[];
 	/*
 		init(String role, int playclock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playclock is the number of seconds after which nextAction must return.
 	*/
     public void init(String role, int playclock) {
 		this.role = role;
 		this.playclock = playclock;
+		this.drop = new int[7];
 		myTurn = !role.equals("WHITE");
 		// TODO: add your own initialization code here
     }
@@ -28,7 +29,9 @@ public class RandomAgent implements Agent
 		
 		myTurn = !myTurn;
 		// TODO: 2. run alpha-beta search to determine the best move
-
+		
+		
+		
 		if (myTurn) {
 			return "(DROP " + (random.nextInt(7)+1) + ")";
 		} else {

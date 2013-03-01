@@ -42,8 +42,7 @@ public class State
 		return -1;
 	}
 	
-	public void addMove(int dropedInColumn, boolean white)
-	{
+	public void addMove(int dropedInColumn, boolean white) {
 		int top = getTop(dropedInColumn-1);
 		//New top 
 		top += width;
@@ -53,7 +52,7 @@ public class State
 			this.red += (1 << top);
 	}
 	
-	public int TerminalState() {
+	public int terminalState() {
 		if (getOccupied() == fullBoard) // All Posistions are Occupied
 			return 3;
 		if (colorWin(red))
@@ -125,6 +124,9 @@ public class State
 					l.add(new State(white + insert,red,!whiteTurn));
 				else 
 					l.add(new State(white,red + insert,!whiteTurn));	
+			}
+			else{
+				l.add(null);// just to add up to 7 column.
 			}
 		}
 		return l;
