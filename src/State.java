@@ -174,7 +174,7 @@ public class State
             if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
 		}
 	    
-	    return combos
+	    return combos;
 	}
 
 	ArrayList<State> legalMoves() {
