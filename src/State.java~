@@ -160,7 +160,7 @@ public class State
                 w = w >> 1;
                 if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
             }
-                        r = r >> 3;
+            r = r >> 3;
             w = w >> 3; 
 		}
 		
@@ -194,6 +194,7 @@ public class State
 				l.add(null);// just so there are 7 columns.
 			}
 		}
+		System.out.println("Size of l: " + l.size()); 
 		return l;
 	}	
 	

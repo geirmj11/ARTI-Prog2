@@ -194,6 +194,8 @@ public class State
 				l.add(null);// just so there are 7 columns.
 			}
 		}
+		if(l.size() != 7)
+    		System.out.println("Size of l: " + l.size()); 
 		return l;
 	}	
 	

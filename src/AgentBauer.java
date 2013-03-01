@@ -27,11 +27,11 @@ public class AgentBauer implements Agent
 		myTurn = !role.equals("WHITE");
 		currentState = new State(0,0,myTurn);
 		
-       /* for(State i : currentState.legalMoves()) {
+        for(State i : currentState.legalMoves()) {
 		    for (State j : i.legalMoves())
 			    System.out.print(heuristic(j) + " ");
-			System.out.println();
-		}*/
+			System.out.println(" ");
+		}
 		
 		System.out.println("Done init");
     }
@@ -115,13 +115,13 @@ public class AgentBauer implements Agent
 		for (int deep = 1; hasTime(); deep++){
 			calculate(deep,currentState);
 			//System.out.println("hasTime: " + hasTime());
-			//System.out.println("depth: " + deep);
+			System.out.println("depth: " + deep);
 			if (deep == 10 )
 				break;
 		}
 		int best = 0;
 		for (int i = 0; i < 7; i++ ) {
-			//System.out.println( i +" " + curDepthLevel[i]);
+            System.out.println( i +" " + curDepthLevel[i]);
 			if (curDepthLevel[i] > curDepthLevel[best]) 
 				best = i;
 		
@@ -136,15 +136,15 @@ public class AgentBauer implements Agent
 		int i = 0;
 		
 		int[] bestValues = new int[7];
-		Integer beta = Integer.MIN_VALUE; //Call by referance :)
-		Integer alpha = Integer.MAX_VALUE;
+		Integer beta = Integer.MAX_VALUE; //Call by referance :)
+		Integer alpha = Integer.MIN_VALUE;
 		for ( State s : state.legalMoves()) {
 			i++;
 			if (s == null)
 				continue;
 			int value = -alphaBeta( depth-1, s, -beta, -alpha );
 			
-			//System.out.println("Value " + value + " index " + i);
+			System.out.println("Value " + value + " index " + i);
 			
 			bestValue = Math.max(value, bestValue);
 			bestValues[i-1] = bestValue;
