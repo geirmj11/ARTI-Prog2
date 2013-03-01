@@ -9,18 +9,20 @@ public class AgentBauer implements Agent
 	private String role;
 	//private int myRole;
 	private long turnStarted;
-	private int playclock;
+	private int playClock;
 	private boolean myTurn;
 	private State currentState; 
+	private boolean outOfTime;
 
 	/*
-		init(String role, int playclock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playclock is the number of seconds after which nextAction must return.
+		init(String role, int playClock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playClock is the number of seconds after which nextAction must return.
 	*/
-    public void init(String role, int playclock) {
+    public void init(String role, int playClock) {
+		outOfTime = false;
 		System.out.println("Start init");
 		this.role = role;
-		this.playclock = playclock;
-		System.out.println("Play clock" + playclock);
+		this.playClock = playClock;
+		System.out.println("Play clock" + playClock);
 		myTurn = !role.equals("WHITE");
 		currentState = new State(0,0,myTurn);
 		System.out.println("Done init");
@@ -99,7 +101,7 @@ public class AgentBauer implements Agent
 
 		myTurn = !myTurn;  
         if(!myTurn) {
-			int drop = alphaBeta();
+			int drop = whereToDrop();
 			System.out.println("Droping to " + drop);
 			return "(DROP " + drop + ")";
 		}
@@ -108,46 +110,50 @@ public class AgentBauer implements Agent
 		// TODO: 2. run alpha-beta search to determine the best move
 
 	}
-
+	
 	/// Returns the column which is best to drop inn.
-	int alphaBeta(){
-		int[] moveVal = new int[7]; // 7 posible moves.
-		State[] moves = new State[7];
-
+	int whereToDrop(){
 		int index = 0;
 		int deep = 1;
-		for (; (System.nanoTime() - turnStarted) / 100000000 < playclock * 10  - 5; deep++){
-			index = 0;
-			for (State s : currentState.legalMoves()){
-				moves[index] = s;
-				if (s != null)
-					moveVal[index++] = alphaBeta(deep,s,Integer.MIN_VALUE,Integer.MAX_VALUE);
-				else
-					moveVal[index++] = Integer.MIN_VALUE;
-			}
+		for (; hasTime(); deep++){
+			index = indexOfBest(deep,currentState);
 		}
-		System.out.println(deep);
-		int maxValue = Integer.MIN_VALUE;
-		index = 0;
-		for (int i = 0; i < 7; i++){
-			if (moveVal[i] > maxValue){
-				index = i;
-				maxValue = moveVal[i];
-			}
-		}
-		currentState = moves[index];
+		System.out.println("depth: " + deep);
 		return index + 1;
 	}
-
+	
+	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
+	int indexOfBest(int depth, State state) {
+		int bestValue = Integer.MIN_VALUE;	
+		int bestIndex = 0;
+		int i = 0;
+		
+		Integer beta = Integer.MIN_VALUE; //Call by referance :)
+		Integer alpha = Integer.MAX_VALUE;
+		for ( State s : state.legalMoves()) {
+			i++;
+			if (s == null)
+				continue;
+			int value = -alphaBeta( depth, s, -beta, -alpha );
+			bestValue = Math.max(value, bestValue);
+			if ( bestValue > alpha ) {
+				alpha = bestValue;
+				if ( alpha >= beta ) break;
+				bestIndex = i;
+			}
+		}
+		return bestIndex;
+	}
+	
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
 	int alphaBeta(int depth, State state, int alpha, int beta) {
-		if (depth > 0 || state.terminalState() != 0)
+		if (depth <= 0 || state.terminalState() != 0 || !hasTime())
 			return heuristic(state);
 		int bestValue = Integer.MIN_VALUE;	
 		for ( State s : state.legalMoves()) {
 			if (s == null)
 				continue;
-			int value = - alphaBeta( depth - 1, s, -beta, -alpha );
+			int value = -alphaBeta( depth - 1, s, -beta, -alpha );
 			//(Note: switch and negate bounds)
 			bestValue = Math.max(value, bestValue);
 			if ( bestValue > alpha ) {
@@ -157,4 +163,14 @@ public class AgentBauer implements Agent
 		}
 		return bestValue;
 	}
+	//returns in ms.
+	//return example 5 sec is 500.
+	boolean hasTime()
+	{
+		if (outOfTime)
+			return false;
+		outOfTime = (System.nanoTime() - turnStarted) / 10000000 > playClock * 100  - 50;
+		return outOfTime;
+	}
+		
 }
