@@ -94,10 +94,10 @@ public class State
 		tColor = color;
 		for (int i = 0; i < width; i++){
 			//Row
-			if ((tColor & (long)15) == 15 || 
-			    (tColor & (long)30) == 30 || 
-			    (tColor & (long)60) == 60 ||
-			    (tColor & (long)120) == 120)
+			if ((tColor & 0xF) == 0xF || 
+			    (tColor & 0x1E) == 0x1E || 
+			    (tColor & 0x3C) == 0x3C ||
+			    (tColor & 0x78) == 0x78)
 				return true;
 			tColor = tColor >> width;
 		}
@@ -110,6 +110,50 @@ public class State
 	
 	public boolean WhiteWin() {
 		return colorWin(white);
+	}
+	
+	///
+	/// Red has the first 4 bits of the integer and white next 4.
+	///
+	ArrayList<Integer> getCombos()
+	{
+		ArrayList<Integer> combos = new ArrayList<Integer>();
+		
+		//long mask = 127;
+		//for (int i = 0; i < 3; i++){
+		//	//Diagonal left
+		//	if (((tColor & (tColor >> 8) & (tColor >> 16)  & (tColor >> 24)) & 7) > 0)
+		//		return true;
+		//	//System.out.println(tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18));
+		//	//Diagonal right
+		//	if (((tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18)) & 112) > 0)
+		//		return true;
+		//	//Column 
+		//	if (((tColor & (tColor >> 7) & (tColor >> 14) & (tColor >> 21)) & mask) > 0)
+		//		return true;
+		//		
+		//	tColor = tColor >> width;
+		//}
+		
+		long r = red;
+		long w = white;
+		for (int i = 0; i < height; i++){
+			if (((white & 0xF) | (red & 0xF)) > 0 && (white & 0xF) == 0 || (red & 0xF) == 0)
+				combos.add((int)(((white & 0xF) << 4)  | (red & 0xF)));
+				
+			if (((white & 0x1E) | (red & 0x1E)) > 0 && (white & 0x1E) == 0 || (red & 0x1E) == 0)
+				combos.add((int)(((white & 0x1E) << 3) | ((red & 0x1E) >> 1)));
+				
+			if (((white & 0x3C) | (red & 0x3C)) > 0 && (white & 0x3C) == 0 || (red & 0x3C) == 0)
+				combos.add((int)(((white & 0x3C) << 2) |  ((red & 0x3C) >> 2)));
+				
+			if (((white & 0x3C) | (red & 0x3C)) > 0 && (white & 0x3C) == 0 || (red & 0x3C) == 0)
+				combos.add((int)(((white & 0x78) << 1) | ((red & 0x78) >> 3)));
+				
+			red = red >> width;
+			white = white >> width;
+		}
+		return combos;
 	}
 	
 	ArrayList<State> legalMoves() {
