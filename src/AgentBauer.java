@@ -48,10 +48,7 @@ public class AgentBauer implements Agent
             }
             
             if(i == 0xF){
-                if(role == "WHITE" && isWhite == true)
-                    return Integer.MIN_VALUE;
-                else
-                    return Integer.MAX_VALUE;
+				return Integer.MAX_VALUE;
             }
             if(i == 1 || i == 2 || i == 4 || i == 8){
                 if(isWhite == true) Value++;
@@ -66,8 +63,7 @@ public class AgentBauer implements Agent
                 else Value -= 10;
             }
         }
-        if (this.role == "WHITE") return Value;
-        else return Value;
+		return Value;
     }
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
