@@ -180,7 +180,7 @@ public class State
 		ArrayList<State> l = new ArrayList<State>();
 		for (int i = 1; i <= width; i++)
 		{
-			int top = getTop(i);
+			int top = getTop(i-1);
 			if (top != -1){
 				long insert = (1 << ((top*width)+(i-1)));
 				if (whiteTurn) 

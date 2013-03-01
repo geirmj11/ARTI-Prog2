@@ -25,10 +25,12 @@ public class AgentBauer implements Agent
 		System.out.println("Play clock" + playClock);
 		
 		myTurn = !role.equals("WHITE");
-		currentState = new State(0,7,myTurn);
+		currentState = new State(0,0,myTurn);
 		
         for(State i : currentState.legalMoves()) {
-			System.out.println(heuristic(i));
+		    for (State j : i.legalMoves())
+			    System.out.print(heuristic(j) + " ");
+			System.out.println();
 		}
 		
 		System.out.println("Done init");
@@ -51,15 +53,15 @@ public class AgentBauer implements Agent
 				return Integer.MAX_VALUE;
             }
             if(i == 1 || i == 2 || i == 4 || i == 8){
-                if(isWhite == true) Value++;
+                if(isWhite) Value++;
                 else Value--;
             }
             else if(i == 7 || i == 11 || i == 13 || i == 14){
-                if(isWhite == true) Value += 100;
+                if(isWhite) Value += 100;
                 else Value -= 100;
             }
             else {
-                if(isWhite == true) Value += 10;
+                if(isWhite) Value += 10;
                 else Value -= 10;
             }
         }
