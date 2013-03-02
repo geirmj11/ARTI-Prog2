@@ -1,7 +1,4 @@
-import java.util.Collection;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class AgentBauer implements Agent
 {
@@ -24,53 +21,60 @@ public class AgentBauer implements Agent
 		this.curDepthLevel = new int[7];
 		System.out.println("Play clock" + playClock);
 		
-		myTurn = !role.equals("WHITE");
+		myTurn = role.equals("WHITE");
 		currentState = new State(0,0,myTurn);
+        
+		for(State i : currentState.legalMoves()) 
+			System.out.print(heuristic(i) + " ");
+		System.out.println();
 		
-       /* for(State i : currentState.legalMoves()) {
-		    for (State j : i.legalMoves())
-			    System.out.print(heuristic(j) + " ");
-			System.out.println();
-		}*/
+        //for(State i : currentState.legalMoves()) {
+		//    for (State j : i.legalMoves())
+		//	    System.out.print(heuristic(j) + " ");
+		//	System.out.println();
+		//}
 		
 		System.out.println("Done init");
     }
 
     public int heuristic(State state){
         int Value = 0;
-        boolean isWhite;
-        for(int i : state.getCombos()) {
-            //System.out.println("combos: " + i );
-            if(i > 0xF){          //white
+		ArrayList<Integer> comobs =  state.getCombos();
+		//System.out.println("combos: " + comobs.size());
+        for(int i : comobs) {
+            //System.out.print(i);
+            if(i > 0xF) {//white
                 i = i >> 4;   
-                isWhite = true;
-            }
-            else {                //red
-                isWhite = false;
-            }
-            
-            if(i == 0xF){
-			    if(role == "WHITE" && isWhite)
-    				return Integer.MAX_VALUE;
-    		    else
-    		        return Integer.MIN_VALUE;
-            }
-            if(i == 1 || i == 2 || i == 4 || i == 8){
-                if(isWhite) Value++;
-                else Value--;
-            }
-            else if(i == 7 || i == 11 || i == 13 || i == 14){
-                if(isWhite) Value += 100;
-                else Value -= 100;
-            }
-            else {
-                if(isWhite) Value += 10;
-                else Value -= 10;
-            }
-        }
-        if(this.role == "WHITE") return Value;
-        else return -Value;
-    }
+				if (role.equals("WHITE")){
+					if(i == 0xF) return Integer.MAX_VALUE;
+					if(i == 1 || i == 2 || i == 4 || i == 8) 			Value += 1;
+					else if(i == 7 || i == 11 || i == 13 || i == 14)	Value += 100;
+					else 												Value += 10;
+				}		
+				else {
+					if(i == 0xF) return Integer.MIN_VALUE;
+					if(i == 1 || i == 2 || i == 4 || i == 8) 			Value -= 1;
+					else if(i == 7 || i == 11 || i == 13 || i == 14)	Value -= 100;
+					else 												Value -= 10;
+				}
+			}
+            else {//red
+				if (role.equals("RED")){
+					if(i == 0xF) return Integer.MAX_VALUE;
+					if(i == 1 || i == 2 || i == 4 || i == 8) 			Value += 1;
+					else if(i == 7 || i == 11 || i == 13 || i == 14)	Value += 100;
+					else 												Value += 10;
+				}		
+				else {
+					if(i == 0xF) return Integer.MIN_VALUE;
+					if(i == 1 || i == 2 || i == 4 || i == 8) 			Value -= 1;
+					else if(i == 7 || i == 11 || i == 13 || i == 14)	Value -= 100;
+					else 												Value -= 10;
+				}
+			}
+		}
+		return Value;
+	}
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
  
@@ -79,28 +83,11 @@ public class AgentBauer implements Agent
         System.out.println("-------------------->  Enemy dropped at " +lastDrop);
 
 		if(lastDrop != 0)
-            currentState.addMove(lastDrop,myTurn);
-
-		//switch (currentState.terminalState()){
-		//	case 3: // Full Board
-		//		System.out.print("Full Board");
-		//	break;
-        //
-		//	case 2: // red
-		//		System.out.println("Red Won!");
-		//	break;
-        //
-		//	case 1: // white
-		//		System.out.println("White Won!");
-		//	break;
-        //
-		//	case 0: // None
-		//		System.out.println("Not a terminal state.");
-		//	break;
-		//}
-
-		myTurn = !myTurn;  
-        if(!myTurn) {
+            currentState.addMove(lastDrop,myTurn); 
+		System.out.println("Red: "+ (long)currentState.red + " White: " +currentState.white );
+		
+		myTurn = !myTurn; 		
+        if(!myTurn){
 			int drop = whereToDrop();
 			System.out.println("------------------------->   Droping to " + drop);
 			return "(DROP " + drop + ")";
@@ -114,14 +101,13 @@ public class AgentBauer implements Agent
 		//System.out.println("hasTime: " + hasTime());
 		for (int deep = 1; hasTime(); deep++){
 			calculate(deep,currentState);
-			//System.out.println("hasTime: " + hasTime());
-			//System.out.println("depth: " + deep);
-			if (deep == 10 )
-				break;
+			System.out.println("depth: " + deep);
+			//if (deep == 1 )
+			//	break;
 		}
 		int best = 0;
 		for (int i = 0; i < 7; i++ ) {
-			//System.out.println( i +" " + curDepthLevel[i]);
+			System.out.println( i +" " + curDepthLevel[i]);
 			if (curDepthLevel[i] > curDepthLevel[best]) 
 				best = i;
 		
@@ -131,52 +117,48 @@ public class AgentBauer implements Agent
 	
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
 	void calculate(int depth, State state) {
-		int bestValue = Integer.MIN_VALUE;	
 		int bestIndex = 0;
 		int i = 0;
 		
 		int[] bestValues = new int[7];
-		Integer beta = Integer.MIN_VALUE; //Call by referance :)
-		Integer alpha = Integer.MAX_VALUE;
+		Integer beta = Integer.MAX_VALUE; 
+		Integer alpha = Integer.MIN_VALUE;
 		for ( State s : state.legalMoves()) {
-			i++;
-			if (s == null)
+			if (s == null) {
+				bestValues[i++] = Integer.MIN_VALUE;
 				continue;
-			int value = -alphaBeta( depth-1, s, -beta, -alpha );
-			
-			//System.out.println("Value " + value + " index " + i);
-			
-			bestValue = Math.max(value, bestValue);
-			bestValues[i-1] = bestValue;
-			if ( bestValue > alpha ) {
-				alpha = bestValue;
-				if ( alpha >= beta ) break;
+			}
+			bestValues[i++] = alphaBeta( depth-1, s, -beta, -alpha );;
+		}
+		if (hasTime()){
+			//We did not run out of time :)
+			for (int k = 0; k < 7; k++ ) {// and can safely use these values.
+				System.out.println( k +" " + bestValues[k]);
+				curDepthLevel[k] = bestValues[k];
 			}
 		}
-		if (hasTime())
-		{
-			//We did not run out of time :)
-			for (int k = 0; k < 7; k++ ) // and can safely use these values.
-				curDepthLevel[k] = bestValues[k];
-		}
-		//else
-		//	System.out.println( "Did not have time !");
 	}
 	
 	// Call: value = AlphaBeta( MaxDepth, s, -INF, INF )
-	int alphaBeta(int depth, State state, int alpha, int beta) {
-		if (depth <= 0 || state.terminalState() != 0 || !hasTime())
-			return heuristic(state);
+	int alphaBeta(int depth, State state, Integer alpha, Integer beta) {
+		int heuristics = heuristic(state);
+		if (depth <= 0 || heuristics == Integer.MAX_VALUE || heuristics == Integer.MIN_VALUE  || !hasTime()){
+			//System.out.println("Heuristics: " + heuristics + " size " + state.getCombos().size() + " ocupied " + state.getOccupied());
+			return heuristics;
+		}
 		int bestValue = Integer.MIN_VALUE;	
 		for ( State s : state.legalMoves()) {
-			if (s == null)
-				continue;
+			if (s == null) continue;
 			int value = -alphaBeta( depth - 1, s, -beta, -alpha );
 			//(Note: switch and negate bounds)
-			bestValue = Math.max(value, bestValue);
+			if (value > bestValue) bestValue = value;
 			if ( bestValue > alpha ) {
-				alpha = bestValue; //(adjust the lower bound)
-				if ( alpha >= beta ) break; //(beta cutoff)
+				alpha = bestValue;
+				//System.out.println("New Alpha value "+alpha+" Heuristics: " + heuristics + " size " + state.getCombos().size() + " ocupied " + state.getOccupied());
+				if ( alpha >= beta ) {
+					//System.out.println("Prooning!!");
+					break;
+				}
 			}
 		}
 		return bestValue;
