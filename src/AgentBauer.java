@@ -28,11 +28,19 @@ public class AgentBauer implements Agent
 			System.out.print(heuristic(i) + " ");
 		System.out.println();
 		
+<<<<<<< HEAD
         //for(State i : currentState.legalMoves()) {
 		//    for (State j : i.legalMoves())
 		//	    System.out.print(heuristic(j) + " ");
 		//	System.out.println();
 		//}
+=======
+        for(State i : currentState.legalMoves()) {
+		    for (State j : i.legalMoves())
+			    System.out.print(heuristic(j) + " ");
+			System.out.println(" ");
+		}
+>>>>>>> 2aad157bce6581ef7fe7006b513125277fe64a5d
 		
 		System.out.println("Done init");
     }
@@ -121,7 +129,7 @@ public class AgentBauer implements Agent
 		int i = 0;
 		
 		int[] bestValues = new int[7];
-		Integer beta = Integer.MAX_VALUE; 
+		Integer beta = Integer.MAX_VALUE; //Call by referance :)
 		Integer alpha = Integer.MIN_VALUE;
 		for ( State s : state.legalMoves()) {
 			if (s == null) {
