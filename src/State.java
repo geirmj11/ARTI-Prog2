@@ -21,8 +21,7 @@ public class State
 	}
 	
 	int getRow(int i) {
-		Long ret = (getOccupied() >> width * i ) & 0x7F;
-		return ret.intValue();
+		return (int)((getOccupied() >> width * i ) & 0x7F);
 		// mask out other then the intended row.
 		// with the first 6 bits set.
 	}
@@ -62,7 +61,7 @@ public class State
     	for (int i = 0; i < height; i++){
             for(int k = 0; k < 4; k++){
                 line = (r & 0xF);
-                line += (w & 0xF)<<4;
+                line = line | ((w & 0xF)<<4);
                 if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
                 r = r >> 1;
                 w = w >> 1;
@@ -77,7 +76,7 @@ public class State
 		for(int i = 0; i< 3;i++){           
             for(int k = 0; k<4;k++){
                 line = (r & 1) + ((r >> 7) & 2) + ((r >> 14) & 4) + ((r >> 21) & 8);
-                line += ((w & 1) + ((w >> 7) & 2) + ((w >> 14) & 4) + ((w >> 21) & 8))<<4;
+                line = line | (((w & 1) + ((w >> 7) & 2) + ((w >> 14) & 4) + ((w >> 21) & 8)) << 4);
                 r = r >> 1;
                 w = w >> 1;
                 if(line != 0 && ((line & 0xF) == 0 || line <= 0xF)) combos.add((int)line);
@@ -117,10 +116,8 @@ public class State
 
 	public int terminalState() {
 		if (getOccupied() == fullBoard) // All Posistions are Occupied
-			return 3;
-		if (colorWin(red))
 			return 2;
-		if (colorWin(white))
+		if (colorWin(getOccupied()))
 			return 1;
 		return 0;
 	}
@@ -186,14 +183,6 @@ public class State
 				l.add(null);// just so there are 7 columns.
 			}
 		}
-		if(l.size() != 7)
-    		System.out.println("Size of l: " + l.size()); 
 		return l;
 	}	
-	
-	@Override
-    public int hashCode(){
-		Long ret = (long)19 * white + (long)31 * red;
-        return ret.intValue();
-    }	
 }

@@ -10,6 +10,7 @@ public class AgentBauer implements Agent
 	private boolean myTurn;
 	private State currentState; 
 	private int[] curDepthLevel;
+	private int maxDepth = 43;
 
 	/*
 		init(String role, int playClock) is called once before you have to select the first action. Use it to initialize the agent. role is either "WHITE" or "RED" and playClock is the number of seconds after which nextAction must return.
@@ -78,8 +79,9 @@ public class AgentBauer implements Agent
 	// lastDrop is 0 for the first call of nextAction (no action has been executed),
 	// otherwise it is a number n with 0<n<8 indicating the column that the last piece was dropped in by the player whose turn it was
  
-    public String nextAction(int lastDrop) { 
+    public String nextAction(int lastDrop) {
 		turnStarted = System.nanoTime();
+		maxDepth--;
         System.out.println("-------------------->  Enemy dropped at " +lastDrop);
 
 		if(lastDrop != 0)
@@ -102,8 +104,8 @@ public class AgentBauer implements Agent
 		for (int deep = 1; hasTime(); deep++){
 			calculate(deep,currentState);
 			System.out.println("depth: " + deep);
-			//if (deep == 1 )
-			//	break;
+			if (deep > maxDepth)
+				break;
 		}
 		int best = 0;
 		for (int i = 0; i < 7; i++ ) {
@@ -128,7 +130,8 @@ public class AgentBauer implements Agent
 				bestValues[i++] = Integer.MIN_VALUE;
 				continue;
 			}
-			bestValues[i++] = alphaBeta( depth-1, s, -beta, -alpha );;
+			bestValues[i++] = alphaBeta( depth-1, s, -beta, -alpha );
+			
 		}
 		if (hasTime()){
 			//We did not run out of time :)
