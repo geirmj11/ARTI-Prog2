@@ -47,20 +47,20 @@ public class DefaultAgent implements Agent
         long white = state.white;
         for(int i = 0; i<42; i++){            
             //horizontal pairs
-            if(red & (red >> 1))&1) Value--;
-            if(white & (white >> 1)) &1) Value++;
+            if(((red & (red >> 1)) &1) == 1) Value--;
+            if(((white & (white >> 1)) &1) == 1) Value++;
             
             //vertical lines
-            if((red & (red >> 7))&1) Value--;
-            if((white & (white >> 7)) &1) Value++;          
+            if(((red & (red >> 7)) &1) == 1) Value--;
+            if(((white & (white >> 7)) &1) == 1) Value++;          
             
             //left leaning lines           
-            if((red & (red >> 8)) & 1)&1) Value--;
-            if((white & (white >> 8)) & 1)&1) Value++;
+            if (((red & (red >> 8)) & 1) == 1) Value--;
+            if (((white & (white >> 8)) & 1) == 1) Value++;
 
             //right leaning lines
-            if((red & (red >> 6)) & 2) Value--;
-            if((white & (white >> 6)) & 2) Value--;
+            if (((red & (red >> 6)) & 2) == 1) Value--;
+            if (((white & (white >> 6)) & 2) == 1) Value--;
         }
         if(state.whiteTurn) return Value;
 		return -Value;
