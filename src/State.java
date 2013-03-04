@@ -136,18 +136,23 @@ public class State
 		//           001
 		// color & ((color >> 7) & ~7) & ((color >> 15) & ~3) & ((color >> 24) & ~3)
 		long tColor = color;
-		long mask = 127;
 		for (int i = 0; i < 3; i++){
 			//Diagonal left
-			if (((tColor & (tColor >> 8) & (tColor >> 16)  & (tColor >> 24)) & 7) > 0)
+			if (((tColor & (tColor >> 8) & (tColor >> 16)  & (tColor >> 24)) & 7) > 0){
+				System.out.println("Left diagonal win");
 				return true;
+			}
 			//System.out.println(tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18));
 			//Diagonal right
-			if (((tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18)) & 112) > 0)
+			if (((tColor & (tColor >> 6) & (tColor >> 12) & (tColor >> 18)) & 112) > 0){
+				System.out.println("Right diagonal win");
 				return true;
+			}
 			//Column 
-			if (((tColor & (tColor >> 7) & (tColor >> 14) & (tColor >> 21)) & mask) > 0)
+			if (((tColor & (tColor >> 7) & (tColor >> 14) & (tColor >> 21)) & 127) > 0){
+				System.out.println("Column win");
 				return true;
+			}
 
 			tColor = tColor >> width;
 		}
@@ -158,8 +163,10 @@ public class State
 			if ((tColor & (long)15) == 15 || 
 			    (tColor & (long)30) == 30 || 
 			    (tColor & (long)60) == 60 ||
-			    (tColor & (long)120) == 120)
+			    (tColor & (long)120) == 120){
+				System.out.println("Row win");
 				return true;
+			}
 			tColor = tColor >> width;
 		}
 		return false;
